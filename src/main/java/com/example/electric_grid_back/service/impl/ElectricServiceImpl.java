@@ -135,6 +135,7 @@ public class ElectricServiceImpl implements ElectricService {
         if(stack.contains(current) && on){
             int i = stack.size() -1;
             boolean loopflag = true;
+            Map<Switch, Boolean> switchVisited = new HashMap<>();
             while(i>0 && !stack.get(i).equals(current)){
                 if(stack.get(i).getState() == 0 || stack.get(i).getState() == 3){
                     loopflag = false;
@@ -144,9 +145,31 @@ public class ElectricServiceImpl implements ElectricService {
                         if(stack.get(i - 1).equals(n) && s.isState() == false){
                             loopflag = false;
                         }
+                        if(stack.get(i-1).equals(n)){
+                            if(switchVisited.containsKey(s)){
+                                loopflag = false;
+                            }
+                            else{
+                                switchVisited.put(s, true);
+                            }
+                        }
                     }
                 }
                 i--;
+            }
+            for(Switch s:nodeMap.get(stack.get(i))) {
+                for (Node n : switchMap.get(s)) {
+                    if (stack.get(stack.size() - 1).equals(n) && s.isState() == false) {
+                        loopflag = false;
+                    }
+                    if (stack.get(stack.size() - 1).equals(n)) {
+                        if (switchVisited.containsKey(s)) {
+                            loopflag = false;
+                        } else {
+                            switchVisited.put(s, true);
+                        }
+                    }
+                }
             }
             if (loopflag) {
                 i = stack.size() -1;
@@ -161,16 +184,21 @@ public class ElectricServiceImpl implements ElectricService {
             int val = (on) ? 1 : 0;
             if(current.getState()!=1 && current.getState()!=2 && val ==1)
                 current.setState(val);
-            if(visitedMap.get(current)){
-                return;
+            else{
+                if(current.getState() == 3){
+                    current.setState(0);
+                }
             }
-            current.setState(val);
+            //if(visitedMap.get(current) && current.getState() == 0){
+            //    return;
+            //}
+            //current.setState(val);
             stack.add(current);
             visitedMap.put(current, true);
             for(Switch s:nodeMap.get(current)){
                 for(Node n:switchMap.get(s)){
                     if(!current.equals(n)){
-                        if(lastSwitch!=null && lastSwitch.equals(s)){
+                        if(lastSwitch!=null && lastSwitch.equals(s) || (!on && n.getState()!=3)){
                             continue;
                         }
                         setUp(n, stack, on && s.isState(), s);
