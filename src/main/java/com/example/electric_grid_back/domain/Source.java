@@ -16,4 +16,9 @@ import lombok.Setter;
 @SequenceGenerator(name = "node_generator", sequenceName = "SEQ_NODE", allocationSize = 1)
 public class Source extends AbstractNode {
     private boolean state;
+
+    public Source(Long id, double x, double y, boolean state) {
+        super(id, x, y);
+        this.state = state;
+    }
 }

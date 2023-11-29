@@ -15,4 +15,9 @@ import lombok.Setter;
 @SequenceGenerator(name = "node_generator", sequenceName = "SEQ_NODE", allocationSize = 1)
 public class Node extends AbstractNode{
     private int state; //0-> off 1->on 2->loop 3->out of network
+
+    public Node(Long id, double x, double y, int state) {
+        super(id, x, y);
+        this.state = state;
+    }
 }
